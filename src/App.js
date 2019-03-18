@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import {Link} from 'react-router-dom';
 class App extends Component {
   render() {
     return (
@@ -64,6 +64,9 @@ class App extends Component {
                   </div>
                 </div>
               </div>
+            </div>
+            <div>
+              <Link to="/cadastrar/">Incluir um novo cliente</Link>
             </div>
           </div>
         </div>

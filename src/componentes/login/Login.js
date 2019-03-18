@@ -60,13 +60,13 @@ export default class Login extends Component {
                         <form method="post" onSubmit={this.autenticar}>
                             <div className="form-group">
                                 <div className="form-label-group">
-                                    <label for="login">Login</label>
-                                    <input type="text" id="login" name="login" className="form-control" onChange={this.aplicaValores} placeholder="Login" required="required" autofocus="autofocus" />
+                                    <label htmlFor="login">Login</label>
+                                    <input type="text" id="login" name="login" className="form-control" onChange={this.aplicaValores} placeholder="Login" required="required" autoFocus="autofocus" />
                                 </div>
                             </div>
                             <div className="form-group">
                                 <div className="form-label-group">
-                                    <label for="senha">Senha</label>
+                                    <label htmlFor="senha">Senha</label>
                                     <input type="password" id="senha" name="senha" className="form-control" onChange={this.aplicaValores} placeholder="Senha" required="required" />
                                 </div>
                             </div>

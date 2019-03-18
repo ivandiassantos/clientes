@@ -9,12 +9,14 @@ import './App.css';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
 import Login from './componentes/login/Login';
 import App from './App';
+import CadastrarCliente from './componentes/clientes/CadastrarCliente';
 
 ReactDOM.render(
     <Router>
         <div>
             <Route path="/" exact component={Login}/>
             <Route path="/principal/" component={App}/>
+            <Route path="/cadastrar/" component={CadastrarCliente}/>
         </div>
     </Router>
     , document.getElementById('root')
