@@ -5,9 +5,20 @@ export default class CadastrarCliente extends Component {
 
     constructor() {
         super();
-        this.state = {listaTiposTelefones:[], listaUfs:[]};
+        this.state = {listaTiposTelefones:[], listaUfs:[], listaTelefones:[]};
         this.aplicaValores = this.aplicaValores.bind(this);
         this.consultaCEP = this.consultaCEP.bind(this);
+        this.adicionaTelefone = this.adicionaTelefone.bind(this);
+        this.cadastrarCliente = this.cadastrarCliente.bind(this);
+    }
+
+    cadastrarCliente(event){
+
+    }
+
+    adicionaTelefone(event){
+        this.state.listaTelefones.push(this.state.telefone);
+        this.setState({listaTelefones:this.state.listaTelefones});
     }
 
     aplicaValores(event) {
@@ -30,7 +41,13 @@ export default class CadastrarCliente extends Component {
             }
         })
         .then(resposta=>{
-            this.setState({logradouro:resposta.logradouro});
+            console.log('CEP: ', resposta);
+            this.setState({
+                logradouro:resposta.logradouro, 
+                bairro:resposta.bairro,
+                localidade: resposta.localidade,
+                uf:resposta.uf
+            });
             
         })
     }
@@ -91,42 +108,42 @@ export default class CadastrarCliente extends Component {
                             </ol>
                             <div className="row">
                                 <div className="col-md-auto">
-                                    <form>
+                                    <form onSubmit={this.cadastrarCliente}>
                                         <div className="form-row">
                                             <div className="col">
                                                 <label htmlFor="cpf">CPF</label>
-                                                <InputMask name="cpf" className="form-control" mask="999.999.999-99" id="cpf" aria-describedby="cpf" placeholder="CPF" />
+                                                <InputMask name="cpf" className="form-control" mask="999.999.999-99" id="cpf" onChange={this.aplicaValores}  aria-describedby="cpf" placeholder="CPF" />
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="nome">Nome</label>
-                                                <input type="text" name="nome" className="form-control" id="nome" aria-describedby="nome" placeholder="Nome" />
+                                                <input type="text" name="nome" className="form-control" id="nome" aria-describedby="nome" onChange={this.aplicaValores} placeholder="Nome" />
                                             </div>
                                         </div>
                                         <div className="form-row">
                                             <div className="col">
                                                 <label htmlFor="cep">CEP</label>
-                                                <InputMask type="text" onBlur={this.consultaCEP} name="cep" mask="99.999-999" className="form-control" id="cep" aria-describedby="cep" placeholder="CEP" />
+                                                <InputMask type="text" onBlur={this.consultaCEP} name="cep" mask="99.999-999" onChange={this.aplicaValores} className="form-control" id="cep" aria-describedby="cep" placeholder="CEP" />
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="logradouro">Logradouro</label>
-                                                <input type="text" name="logradouro" value={this.state.logradouro} className="form-control" id="logradouro" aria-describedby="logradouro" placeholder="Logradouro" />
+                                                <input type="text" name="logradouro" value={this.state.logradouro} className="form-control" onChange={this.aplicaValores} id="logradouro" aria-describedby="logradouro" placeholder="Logradouro" />
                                             </div>
                                         </div>
                                         <div className="form-row">
                                             <div className="col">
                                                 <label htmlFor="bairro">Bairro</label>
-                                                <input type="text" name="bairro" className="form-control" id="bairro" aria-describedby="bairro" placeholder="Bairro" />
+                                                <input type="text" name="bairro" value={this.state.bairro} className="form-control" id="bairro" onChange={this.aplicaValores} aria-describedby="bairro" placeholder="Bairro" />
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="cidade">Cidade</label>
-                                                <input type="text" name="cidade" className="form-control" id="cidade" aria-describedby="cidade" placeholder="Cidade" />
+                                                <input type="text" name="cidade" value={this.state.localidade} className="form-control" id="cidade" onChange={this.aplicaValores} aria-describedby="cidade" placeholder="Cidade" />
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="uf" name="uf">UF</label>
-                                                <select className="form-control" id="uf" name="uf">
+                                                <select className="form-control" value={this.state.uf} id="uf" name="uf" onChange={this.aplicaValores}>
                                                     {
                                                         this.state.listaUfs.map(uf => {
-                                                            return (<option value={uf.sigla}>{uf.sigla}</option>);
+                                                            return (<option value={uf.sigla} key={uf.sigla}>{uf.sigla}</option>);
                                                         })
                                                     }
                                                 </select>
@@ -134,19 +151,38 @@ export default class CadastrarCliente extends Component {
                                         </div>
                                         <div className="form-row">
                                             <div className="col">
-                                                <label htmlFor="tipoTelefone" name="tipoTelefone">Tipo do Telefone</label>
-                                                <select className="form-control" id="tipoTelefone">
+                                                <label htmlFor="tipoTelefone">Tipo do Telefone</label>
+                                                <select className="form-control" id="tipoTelefone" name="tipoTelefone" onChange={this.aplicaValores}>
                                                     {
                                                         this.state.listaTiposTelefones.map(tipoTelefone=>{
-                                                            return (<option value={tipoTelefone.id}>{tipoTelefone.descricao}</option>);
+                                                            return (<option value={tipoTelefone.id} key={tipoTelefone.id}>{tipoTelefone.descricao}</option>);
                                                         })
                                                     }
                                                 </select>
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="telefone">Telefone</label>
-                                                <InputMask type="text" name="telefone" mask="(99) 9999-9999" className="form-control" id="telefone" aria-describedby="telefone" placeholder="Telefone" />
+                                                <InputMask type="text" name="telefone" mask="(99) 9999-9999" className="form-control" id="telefone" aria-describedby="telefone" placeholder="Telefone" onChange={this.aplicaValores}/>
                                             </div>
+                                            <div className="col-sm">
+                                                <button type="button" className="btn btn-primary" title="Adicionar outro telefone" onClick={this.adicionaTelefone}>Adicionar</button>
+                                            </div>
+                                        </div>
+                                        <div className="form-row">
+                                            <table>
+                                                <thead>
+                                                    <th>Telefone</th>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    {
+                                                        this.state.listaTelefones.map(telefone=>{
+                                                            return (<tr><td>(61) 9999-9999</td></tr>);
+                                                        })
+                                                    }
+                                                    
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </form>
                                 </div>
