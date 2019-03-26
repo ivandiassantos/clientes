@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import InputMask from 'react-input-mask';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default class CadastrarCliente extends Component {
 
@@ -11,29 +11,74 @@ export default class CadastrarCliente extends Component {
         this.consultaCEP = this.consultaCEP.bind(this);
         this.adicionaTelefone = this.adicionaTelefone.bind(this);
         this.cadastrar = this.cadastrar.bind(this);
+        this.obterDescricaoTipoTelefone = this.obterDescricaoTipoTelefone.bind(this);
+        this.removeMascaraTelefones = this.removeMascaraTelefones.bind(this);
     }
 
     cadastrar(event) {
         event.preventDefault();
         const cliente = {
-            cpf:this.state.cpf.replace(/^0-9/g, ''),
-            nome:this.state.nome,
-            endereco:{
-                cep:this.state.cep.replace(/^0-9/g, ''),
-                logradouro:this.state.logradouro,
-                bairro:this.state.bairro,
-                complemento:this.state.complemento,
-                numero:this.state.numero,
-                cidade:this.state.cidade,
-                uf:this.state.uf
-            },
-            telefones:this.state.listaTelefones
+            cpf: this.state.cpf.replace(/[^0-9]/g, ''),
+            nome: this.state.nome
+        }
+        const endereco = {
+            cep: this.state.cep.replace(/[^0-9]/g, ''),
+            logradouro: this.state.logradouro,
+            bairro: this.state.bairro,
+            complemento: this.state.complemento,
+            numero: this.state.numero,
+            cidade: this.state.cidade,
+            uf: this.state.uf
+        }
+        const telefones = this.removeMascaraTelefones(this.state.listaTelefones);
+        const headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + localStorage.getItem('token_acesso'));
+        headers.append('Content-Type','application/json');
+        const dadosRequisicao = {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(cliente)
         };
+        fetch('http://localhost:9093/v1/cliente', dadosRequisicao)
+            .then(resposta => {
+                console.log('Resposta: ', resposta);
+                if (resposta.ok) {
+                    this.setState({mensagemSucesso:'Cliente cadastrado com sucesso.'});
+                }
+            })
+    }
+
+    removeMascaraTelefones(listaTelefones){
+        let telefones = [];
+        listaTelefones.forEach(telefone=>{
+            telefones.push({
+                tipoTelefone:telefone.tipoTelefone,
+                numero:telefone.numero.replace(/[^0-9]/g, '')
+            })
+        });
+        return telefones;
+    }
+
+    obterDescricaoTipoTelefone(codigoTipoTelefone) {
+        let descricao = '';
+        this.state.listaTiposTelefones.forEach(tipoTelefone => {
+            if (tipoTelefone.id === parseInt(codigoTipoTelefone)) {
+                descricao = tipoTelefone.descricao;
+            }
+        });
+        return descricao;
     }
 
     adicionaTelefone(event) {
-        this.state.listaTelefones.push(this.state.telefone);
+        this.state.listaTelefones.push(
+            {
+                tipoTelefone: this.state.tipoTelefone,
+                numero: this.state.telefone,
+                descricaoTipoTelefone: this.obterDescricaoTipoTelefone(this.state.tipoTelefone)
+            }
+        );
         this.setState({ listaTelefones: this.state.listaTelefones });
+        console.log(this.state.listaTelefones);
     }
 
     aplicaValores(event) {
@@ -123,6 +168,14 @@ export default class CadastrarCliente extends Component {
                                 </li>
                             </ol>
                             <div className="container">
+                                {this.state.mensagemSucesso !== undefined &&
+                                    <div className="alert alert-info alert-dismissible fade show" role="alert">
+                                        {this.state.mensagemSucesso}
+                                        <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                }
                                 <form onSubmit={this.cadastrar} method="post">
                                     <div className="row align-items-center">
                                         <div className="col-2">
@@ -178,6 +231,7 @@ export default class CadastrarCliente extends Component {
                                         <div className="col-6">
                                             <label htmlFor="tipoTelefone">Tipo do Telefone</label>
                                             <select className="form-control" id="tipoTelefone" name="tipoTelefone" onChange={this.aplicaValores}>
+                                                <option>Selecione</option>
                                                 {
                                                     this.state.listaTiposTelefones.map(tipoTelefone => {
                                                         return (<option value={tipoTelefone.id} key={tipoTelefone.id}>{tipoTelefone.descricao}</option>);
@@ -185,39 +239,49 @@ export default class CadastrarCliente extends Component {
                                                 }
                                             </select>
                                         </div>
-                                        <div className="col-4">
-                                            <label htmlFor="telefone">Telefone</label>
-                                            <InputMask type="text" name="telefone" mask="(99) 9999-9999" className="form-control" id="telefone" aria-describedby="telefone" placeholder="Telefone" onChange={this.aplicaValores} />
-                                        </div>
+                                        {this.state.tipoTelefone === '2' &&
+                                            <div className="col-4">
+                                                <label htmlFor="telefone">Telefone</label>
+                                                <InputMask type="text" name="telefone" mask="(99) 99999-9999" className="form-control" id="telefone" aria-describedby="telefone" placeholder="Telefone" onChange={this.aplicaValores} />
+                                            </div>
+                                        }
+                                        {this.state.tipoTelefone !== '2' &&
+                                            <div className="col-4">
+                                                <label htmlFor="telefone">Telefone</label>
+                                                <InputMask type="text" name="telefone" mask="(99) 9999-9999" className="form-control" id="telefone" aria-describedby="telefone" placeholder="Telefone" onChange={this.aplicaValores} />
+                                            </div>
+                                        }
                                         <div className="col-2">
                                             <button type="button" className="btn btn-primary" title="Adicionar outro telefone" onClick={this.adicionaTelefone}>Adicionar</button>
                                         </div>
                                     </div>
                                     <div className="row align-items-center">
-                                        {this.state.listaTelefones.length > 0 &&
-                                            <table className="table">
-                                                <thead>
-                                                    <th>Tipo de Telefone</th>
-                                                    <th>Número</th>
-                                                </thead>
-                                                <tbody>
+                                        <div className="col-4">
+                                            {this.state.listaTelefones.length > 0 &&
+                                                <table className="table">
+                                                    <thead>
+                                                        <th>Tipo de Telefone</th>
+                                                        <th>Número</th>
+                                                    </thead>
+                                                    <tbody>
 
-                                                    {
-                                                        this.state.listaTelefones.map(telefone => {
-                                                            return (
-                                                                <tr key="{telefone}">
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                </tr>
-                                                            );
-                                                        })
-                                                    }
+                                                        {
+                                                            this.state.listaTelefones.map(telefone => {
+                                                                return (
+                                                                    <tr key="{telefone.numero}">
+                                                                        <td>{telefone.descricaoTipoTelefone}</td>
+                                                                        <td>{telefone.numero}</td>
+                                                                    </tr>
+                                                                );
+                                                            })
+                                                        }
 
-                                                </tbody>
-                                            </table>
-                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        </div>
                                     </div>
-                                    <br/><br/><br/>
+                                    <br /><br /><br />
                                     <div className="row">
                                         <div className="col-10">
                                         </div>
