@@ -19,18 +19,17 @@ export default class CadastrarCliente extends Component {
         event.preventDefault();
         const cliente = {
             cpf: this.state.cpf.replace(/[^0-9]/g, ''),
-            nome: this.state.nome
-        }
-        const endereco = {
+            nome: this.state.nome,
             cep: this.state.cep.replace(/[^0-9]/g, ''),
             logradouro: this.state.logradouro,
             bairro: this.state.bairro,
             complemento: this.state.complemento,
             numero: this.state.numero,
-            cidade: this.state.cidade,
-            uf: this.state.uf
-        }
-        const telefones = this.removeMascaraTelefones(this.state.listaTelefones);
+            cidade: this.state.localidade,
+            uf: this.state.uf,
+            telefones: this.removeMascaraTelefones(this.state.listaTelefones)
+        };
+        
         const headers = new Headers();
         headers.append('Authorization', 'Bearer ' + localStorage.getItem('token_acesso'));
         headers.append('Content-Type','application/json');
@@ -39,6 +38,7 @@ export default class CadastrarCliente extends Component {
             headers: headers,
             body: JSON.stringify(cliente)
         };
+        
         fetch('http://localhost:9093/v1/cliente', dadosRequisicao)
             .then(resposta => {
                 console.log('Resposta: ', resposta);
@@ -187,7 +187,7 @@ export default class CadastrarCliente extends Component {
                                             <input type="text" name="nome" className="form-control" id="nome" aria-describedby="nome" onChange={this.aplicaValores} placeholder="Nome" />
                                         </div>
                                     </div>
-                                    <div class="row align-items-center">
+                                    <div className="row align-items-center">
                                         <div className="col-2">
                                             <label htmlFor="cep">CEP</label>
                                             <InputMask type="text" onBlur={this.consultaCEP} name="cep" mask="99.999-999" onChange={this.aplicaValores} className="form-control" id="cep" aria-describedby="cep" placeholder="CEP" />

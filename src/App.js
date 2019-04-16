@@ -1,6 +1,29 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 class App extends Component {
+  constructor() {
+    super();
+    this.state = { listaClientes: [] };
+  }
+  componentWillMount() {
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + localStorage.getItem('token_acesso'));
+    headers.append('Content-Type', 'application/json');
+    const dadosRequisicao = {
+      method: 'GET',
+      headers: headers
+    };
+    fetch('http://localhost:9093/v1/cliente', dadosRequisicao)
+      .then(resposta => {
+        if (resposta.ok) {
+          return resposta.json();
+        }
+      })
+      .then(resposta => {
+        console.log('Resposta: ', resposta);
+        this.setState({ listaClientes: resposta });
+      });
+  }
   render() {
     return (
       <div>
@@ -31,42 +54,38 @@ class App extends Component {
               <div className="row justify-content-md-center">
                 <div className="col-md-auto">
                   <div className="table-responsive">
+                    {console.log(this.state)}
                     <table className="table">
                       <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">First</th>
-                          <th scope="col">Last</th>
-                          <th scope="col">Handle</th>
-                        </tr>
+                        <th>CPF</th>
+                        <th>Nome</th>
+                        <th>Ações</th>
                       </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Mark</td>
-                          <td>Otto</td>
-                          <td>@mdo</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Jacob</td>
-                          <td>Thornton</td>
-                          <td>@fat</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Larry</td>
-                          <td>the Bird</td>
-                          <td>@twitter</td>
-                        </tr>
-                      </tbody>
+                      {this.state.listaClientes.length > 0 &&
+                        <tbody>
+                          {
+                            this.state.listaClientes.map(cliente => {
+                              return (
+                                <tr key={cliente.cpf}>
+                                  <td>{cliente.cpf}</td>
+                                  <td>{cliente.nome}</td>
+                                  <td></td>
+                                </tr>
+                              );
+                            })
+                          }
+                        </tbody>
+                      }
+                      {this.state.listaClientes.length === 0 &&
+                        <caption>Nenhum cliente cadastrado. </caption>
+                      }
                     </table>
                   </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <Link to="/cadastrar/">Incluir um novo cliente</Link>
+              <div>
+                <Link to="/cadastrar/" className="btn btn-primary">Incluir Um Novo Cliente</Link>
+              </div>
             </div>
           </div>
         </div>
