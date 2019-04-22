@@ -57,9 +57,11 @@ class App extends Component {
                     {console.log(this.state)}
                     <table className="table">
                       <thead>
-                        <th>CPF</th>
-                        <th>Nome</th>
-                        <th>Ações</th>
+                        <tr>
+                          <th>CPF</th>
+                          <th>Nome</th>
+                          <th>Ações</th>
+                        </tr>
                       </thead>
                       {this.state.listaClientes.length > 0 &&
                         <tbody>
@@ -69,7 +71,17 @@ class App extends Component {
                                 <tr key={cliente.cpf}>
                                   <td>{cliente.cpf}</td>
                                   <td>{cliente.nome}</td>
-                                  <td></td>
+                                  <td>
+                                    <button className="btn btn-light" data-toggle="tooltip" data-placement="top" title="Editar">
+                                      <i className="fa fa-edit"></i>
+                                    </button>
+                                    <button className="btn btn-light" data-toggle="tooltip" data-placement="top" title="Detalhar">
+                                      <i className="fa fa-info-circle"></i>
+                                    </button>
+                                    <button className="btn btn-light" title="Excluir" data-toggle="modal" data-target="#confirmacaoExclusao">
+                                      <i className="fa fa-trash"></i>
+                                    </button>
+                                  </td>
                                 </tr>
                               );
                             })
@@ -80,6 +92,25 @@ class App extends Component {
                         <caption>Nenhum cliente cadastrado. </caption>
                       }
                     </table>
+                    <div class="modal fade" id="confirmacaoExclusao" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Confirmação de Exclusão</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Tem certeza que deseja excluir o cliente?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
+                            <button type="button" class="btn btn-primary">EXCLUIR</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
