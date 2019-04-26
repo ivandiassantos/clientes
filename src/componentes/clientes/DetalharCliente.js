@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom';
 
 export default class DetalharCliente extends Component {
     constructor() {
         super();
-        this.state = {};
+        this.state = {cliente:{telefones:[]}};
     }
 
     componentWillMount() {
@@ -103,12 +104,11 @@ export default class DetalharCliente extends Component {
                                             <label htmlFor="tipoTelefone">Tipo do Telefone</label>
                                         </div>
                                         <div className="col-2">
-                                            <button type="button" className="btn btn-primary" title="Adicionar outro telefone" onClick={this.adicionaTelefone}>Adicionar</button>
                                         </div>
                                     </div>
                                     <div className="row align-items-center">
                                         <div className="col-4">
-                                            {this.state.listaTelefones.length > 0 &&
+                                            {this.state.cliente.telefones.length > 0 &&
                                                 <table className="table">
                                                     <thead>
                                                         <th>Tipo de Telefone</th>
@@ -127,10 +127,9 @@ export default class DetalharCliente extends Component {
                                         <div className="col-10">
                                         </div>
                                         <div className="col-1">
-                                            <input type="submit" value="Cadastrar" className="btn btn-primary" />
                                         </div>
                                         <div className="col-1">
-                                            <Link to="/principal/" className="btn btn-secondary">Cancelar</Link>
+                                            <Link to="/principal/" className="btn btn-secondary">Voltar Para a Listagem</Link>
                                         </div>
                                     </div>
                                 </form>
